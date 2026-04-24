@@ -17,5 +17,9 @@ router.get("/", authMiddleware, (req, res) =>
 router.delete("/:id", authMiddleware, (req, res) =>
   transactionController.delete(req, res),
 );
+// Get user summary of transactions
+router.get("/summary", authMiddleware, (req, res) =>
+  transactionController.summary(req, res),
+);
 
 export default router;

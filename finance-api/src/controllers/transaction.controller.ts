@@ -50,4 +50,11 @@ export class TransactionController {
       });
     }
   }
+
+  async summary(req: AuthRequest, res: Response) {
+    const userId = req.userId;
+    if (!userId) throw new Error("Login is required!");
+    const result = await transactionService.summary(userId);
+    return res.json(result);
+  }
 }

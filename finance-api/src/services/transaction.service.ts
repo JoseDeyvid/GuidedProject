@@ -31,4 +31,29 @@ export class TransactionService {
 
     return deletedTransaction;
   }
+
+  async summary(userId: string) {
+    const transactions = await prisma.transaction.findMany({
+      where: { userId },
+    });
+
+    const summary = transactions.reduce(
+      (acc, transaction) => {
+        if (transaction.type === "income") {
+          acc.income += transaction.amount;
+          acc.balance += transaction.amount;
+        } else {
+          acc.expense += transaction.amount;
+          acc.balance -= transaction.amount;
+        }
+        return acc;
+      },
+      {
+        income: 0,
+        expense: 0,
+        balance: 0,
+      },
+    );
+    return summary;
+  }
 }
