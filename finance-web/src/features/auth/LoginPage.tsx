@@ -1,21 +1,32 @@
 'use client'
 
 import { useLogin } from '@/features/auth/useLogin'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
     const { mutate, isPending } = useLogin()
 
+    const router = useRouter()
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    useEffect(() => {
+        const token = localStorage.getItem("token")
+        if (token) router.push('/dashboard')
+    }, [router])
 
     function handleLogin() {
         mutate(
             { email, password },
             {
                 onSuccess: (data) => {
-                    console.log("Got it")
                     localStorage.setItem('token', data.token)
+                    router.push('/dashboard')
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                }, onError: (error: any) => {
+                    console.log("Erro encontrado => ", error.response?.data.message)
                 }
             }
         )
