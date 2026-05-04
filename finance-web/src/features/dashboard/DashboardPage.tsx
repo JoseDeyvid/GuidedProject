@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useSummary } from "./useSummary"
 import { useEffect } from "react"
+import TransactionList from "../transactions/TransactionList"
 
 export default function DashboardPage() {
     const { data, isLoading, isError } = useSummary()
@@ -26,6 +27,7 @@ export default function DashboardPage() {
                 <p className="p-4 bg-red-200">Despesas: {data.expense}</p>
                 <p className="p-4 bg-blue-200">Saldo: {data.balance}</p>
             </div>
+            <TransactionList />
         </div>
     )
 }
