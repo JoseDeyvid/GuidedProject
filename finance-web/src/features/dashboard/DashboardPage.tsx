@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { useSummary } from "./useSummary"
 import { useEffect } from "react"
 import TransactionList from "../transactions/TransactionList"
+import { CreateTransactionForm } from "../transactions/CreateTransactionForm"
 
 export default function DashboardPage() {
     const { data, isLoading, isError } = useSummary()
@@ -28,6 +29,7 @@ export default function DashboardPage() {
                 <p className="p-4 bg-blue-200">Saldo: {data.balance}</p>
             </div>
             <TransactionList />
+            <CreateTransactionForm />
         </div>
     )
 }
