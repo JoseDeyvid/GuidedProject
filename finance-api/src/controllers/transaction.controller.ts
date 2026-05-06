@@ -27,8 +27,12 @@ export class TransactionController {
   async list(req: AuthRequest, res: Response) {
     try {
       const userId = req.userId;
+      const { type, search } = req.query;
       if (!userId) throw new Error("Login is required!");
-      const transactions = await transactionService.listByUserId(userId);
+      const transactions = await transactionService.listByUserId(userId, {
+        type: type as string,
+        search: search as string,
+      });
       return res.json(transactions);
     } catch (error: any) {
       return res.status(400).json({

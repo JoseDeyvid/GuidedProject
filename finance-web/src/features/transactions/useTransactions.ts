@@ -1,13 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/services/api";
 
-export function useTransactions() {
+type Filters = {
+  type?: string;
+  search?: string;
+};
+
+export function useTransactions(filters?: Filters) {
   return useQuery({
-    queryKey: ["transactions"],
+    queryKey: ["transactions", filters],
     queryFn: async () => {
-      const res = await api.get("/transactions");
+      const res = await api.get("/transactions", {
+        params: filters,
+      });
 
       return res.data;
     },
+    placeholderData: (previousData) => previousData,
   });
 }

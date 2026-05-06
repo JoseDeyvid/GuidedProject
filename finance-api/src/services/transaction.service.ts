@@ -13,9 +13,27 @@ export class TransactionService {
     return transaction;
   }
 
-  async listByUserId(userId: string) {
+  async listByUserId(
+    userId: string,
+    filters?: {
+      type?: string;
+      search?: string;
+    },
+  ) {
     const transactions = await prisma.transaction.findMany({
-      where: { userId },
+      where: {
+        userId,
+        ...(filters?.type && {
+          type: filters.type,
+        }),
+
+        ...(filters?.search && {
+          title: {
+            contains: filters.search,
+            mode: "insensitive",
+          },
+        }),
+      },
       orderBy: { createdAt: "desc" },
     });
     return transactions;

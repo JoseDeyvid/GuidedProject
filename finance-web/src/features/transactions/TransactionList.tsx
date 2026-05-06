@@ -7,7 +7,9 @@ import { useDeleteTransaction } from "./useDeleteTransaction"
 import { EditTransactionForm } from "./EditTransactionForm"
 
 const TransactionList = () => {
-    const { data, isLoading, isError } = useTransactions()
+    const [search, setSearch] = useState('')
+    const [type, setType] = useState('')
+    const { data, isLoading, isError } = useTransactions({ search, type })
     const { mutate: deleteTransaction } = useDeleteTransaction()
     const router = useRouter()
 
@@ -31,6 +33,21 @@ const TransactionList = () => {
     if (isError) return <p>Erro ao carregar</p>
     return (
         <div className="space-y-2 mt-6">
+            <input
+                placeholder="Buscar"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="border p-2 w-full"
+            />
+            <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="border p-2 w-full"
+            >
+                <option value="">Todos</option>
+                <option value="income">Receitas</option>
+                <option value="expense">Despesas</option>
+            </select>
             {data.map((transaction: any) => (
                 <div
                     key={transaction.id}
