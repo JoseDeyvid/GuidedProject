@@ -1,5 +1,6 @@
 import api from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export function useDeleteTransaction() {
   const queryClient = useQueryClient();
@@ -11,6 +12,7 @@ export function useDeleteTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
+      toast.success("Transação removida");
     },
   });
 }

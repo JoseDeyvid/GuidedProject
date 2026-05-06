@@ -13,6 +13,15 @@ const TransactionList = () => {
 
     const [editingId, setEditingId] = useState<string | null>(null)
 
+    const handleDeleteTransaction = (id: string) => {
+        const confirmed = confirm(
+            'Deseja realmente deletar essa transação?'
+        )
+
+        if (confirmed)
+            deleteTransaction(id)
+    }
+
     useEffect(() => {
         const token = localStorage.getItem("token")
         if (!token) router.push('/login')
@@ -59,7 +68,7 @@ const TransactionList = () => {
                     }
 
                     <button
-                        onClick={() => deleteTransaction(transaction.id)}
+                        onClick={() => handleDeleteTransaction(transaction.id)}
                         className="text-red-500"
                     >
                         Deletar

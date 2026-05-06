@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useCreateTransaction } from "./useCreateTransaction"
 
 export function CreateTransactionForm() {
-    const { mutate } = useCreateTransaction()
+    const { mutate, isPending } = useCreateTransaction()
 
     const [title, setTitle] = useState('')
     const [amount, setAmount] = useState('')
@@ -48,9 +48,10 @@ export function CreateTransactionForm() {
 
             <button
                 onClick={handleSubmit}
+                disabled={isPending}
                 className="bg-blue-500 text-white p-2 w-full"
             >
-                Criar
+                {isPending ? "Criando..." : "Criar"}
             </button>
 
         </div>

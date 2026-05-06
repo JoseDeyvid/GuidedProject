@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -12,6 +13,7 @@ export default function RootLayout({
     >
       <body>
         <Providers>{children}</Providers>
+        <Toaster richColors />
       </body>
     </html>
   );
