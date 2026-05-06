@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useTransactions } from "./useTransactions"
 import { useRouter } from "next/navigation"
 import { useDeleteTransaction } from "./useDeleteTransaction"
+import { EditTransactionForm } from "./EditTransactionForm"
 
 const TransactionList = () => {
     const { data, isLoading, isError } = useTransactions()
     const { mutate: deleteTransaction } = useDeleteTransaction()
     const router = useRouter()
+
+    const [editingId, setEditingId] = useState<string | null>(null)
 
     useEffect(() => {
         const token = localStorage.getItem("token")
@@ -37,6 +40,23 @@ const TransactionList = () => {
                             {transaction.amount}
                         </span>
                     </div>
+
+                    {
+                        editingId === transaction.id ? (
+                            <EditTransactionForm
+                                transaction={transaction}
+                                onClose={() => setEditingId(null)}
+                            />
+                        ) : (
+                            <>
+                                <p>{transaction.title}</p>
+
+                                <button onClick={() => setEditingId(transaction.id)}>
+                                    Editar
+                                </button>
+                            </>
+                        )
+                    }
 
                     <button
                         onClick={() => deleteTransaction(transaction.id)}

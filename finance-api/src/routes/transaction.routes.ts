@@ -17,6 +17,10 @@ router.get("/", authMiddleware, (req, res) =>
 router.delete("/:id", authMiddleware, (req, res) =>
   transactionController.delete(req, res),
 );
+// Edit transaction
+router.put("/:id", authMiddleware, (req, res) =>
+  transactionController.edit(req, res),
+);
 // Get user summary of transactions
 router.get("/summary", authMiddleware, (req, res) =>
   transactionController.summary(req, res),

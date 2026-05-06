@@ -37,13 +37,34 @@ export class TransactionController {
     }
   }
 
-  async delete(req: AuthRequest<{ id: string }>, res: Response) {
+  async delete(req: AuthRequest, res: Response) {
     try {
       const { id } = req.params;
       const userId = req.userId;
       if (!userId) throw new Error("Login is required!");
       await transactionService.delete(id, userId);
       return res.status(204).send();
+    } catch (error: any) {
+      return res.status(400).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async edit(req: AuthRequest, res: Response) {
+    try {
+      const { title, amount, type } = req.body;
+      const { id } = req.params;
+      const userId = req.userId;
+      if (!userId) throw new Error("Login is required!");
+      const editedTransaction = await transactionService.edit(
+        id,
+        userId,
+        title,
+        amount,
+        type,
+      );
+      return res.json(editedTransaction);
     } catch (error: any) {
       return res.status(400).json({
         message: error.message,

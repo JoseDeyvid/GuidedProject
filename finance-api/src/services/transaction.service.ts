@@ -32,6 +32,28 @@ export class TransactionService {
     return deletedTransaction;
   }
 
+  async edit(
+    id: string,
+    userId: string,
+    title: string,
+    amount: number,
+    type: string,
+  ) {
+    const transaction = await prisma.transaction.findUnique({ where: { id } });
+    if (!transaction || transaction.userId !== userId)
+      throw new Error("Not authorized!");
+    const editedTransaciton = await prisma.transaction.update({
+      where: { id },
+      data: {
+        title,
+        amount,
+        type,
+      },
+    });
+
+    return editedTransaciton;
+  }
+
   // This commented function makes Node perform the calculation,
   // and the other makes the database perform the calculation; in this way,
   // the processing on the backend is reduced, making it faster and more scalable.
@@ -61,7 +83,7 @@ export class TransactionService {
   // }
 
   // The commented function makes Node perform the calculation,
-  // and that makes the database perform the calculation; in this way,
+  // and this makes the database perform the calculation; in this way,
   // the processing on the backend is reduced, making it faster and more scalable.
   async summary(userId: string) {
     const [income, expense] = await Promise.all([
