@@ -5,6 +5,7 @@ import { useSummary } from "./useSummary"
 import { useEffect } from "react"
 import TransactionList from "../transactions/TransactionList"
 import { CreateTransactionForm } from "../transactions/CreateTransactionForm"
+import BtnExportTransactions from "../transactions/BtnExportTransactions"
 
 export default function DashboardPage() {
     const { data, isLoading, isError } = useSummary()
@@ -30,6 +31,7 @@ export default function DashboardPage() {
             </div>
             <TransactionList />
             <CreateTransactionForm />
+            <BtnExportTransactions />
         </div>
     )
 }

@@ -26,4 +26,9 @@ router.get("/summary", authMiddleware, (req, res) =>
   transactionController.summary(req, res),
 );
 
+// Export all transactions to csv
+router.get("/export/csv", authMiddleware, (req, res) =>
+  transactionController.exportCsv(req, res),
+);
+
 export default router;

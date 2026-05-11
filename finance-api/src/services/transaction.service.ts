@@ -18,25 +18,57 @@ export class TransactionService {
     filters?: {
       type?: string;
       search?: string;
+      page?: number;
+      limit?: number;
     },
   ) {
-    const transactions = await prisma.transaction.findMany({
-      where: {
-        userId,
-        ...(filters?.type && {
-          type: filters.type,
-        }),
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 10;
 
-        ...(filters?.search && {
-          title: {
-            contains: filters.search,
-            mode: "insensitive",
-          },
-        }),
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    return transactions;
+    const skip = (page - 1) * limit;
+
+    const [transactions, total] = await Promise.all([
+      await prisma.transaction.findMany({
+        where: {
+          userId,
+          ...(filters?.type && {
+            type: filters.type,
+          }),
+
+          ...(filters?.search && {
+            title: {
+              contains: filters.search,
+              mode: "insensitive",
+            },
+          }),
+        },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.transaction.count({
+        where: {
+          userId,
+
+          ...(filters?.type && {
+            type: filters.type,
+          }),
+
+          ...(filters?.search && {
+            title: {
+              contains: filters.search,
+              mode: "insensitive",
+            },
+          }),
+        },
+      }),
+    ]);
+    return {
+      transactions,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async delete(id: string, userId: string) {
@@ -70,6 +102,20 @@ export class TransactionService {
     });
 
     return editedTransaciton;
+  }
+
+  async exportCsv(userId: string) {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        userId,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return transactions;
   }
 
   // This commented function makes Node perform the calculation,

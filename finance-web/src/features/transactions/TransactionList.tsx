@@ -5,15 +5,21 @@ import { useTransactions } from "./useTransactions"
 import { useRouter } from "next/navigation"
 import { useDeleteTransaction } from "./useDeleteTransaction"
 import { EditTransactionForm } from "./EditTransactionForm"
+import { useDebounce } from "@/hooks/useDebounce"
 
 const TransactionList = () => {
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 500)
+
     const [type, setType] = useState('')
-    const { data, isLoading, isError } = useTransactions({ search, type })
+    const [page, setPage] = useState(1)
+
+    const { data, isLoading, isError } = useTransactions({ search: debouncedSearch, type, page })
     const { mutate: deleteTransaction } = useDeleteTransaction()
     const router = useRouter()
 
     const [editingId, setEditingId] = useState<string | null>(null)
+
 
     const handleDeleteTransaction = (id: string) => {
         const confirmed = confirm(
@@ -48,7 +54,7 @@ const TransactionList = () => {
                 <option value="income">Receitas</option>
                 <option value="expense">Despesas</option>
             </select>
-            {data.map((transaction: any) => (
+            {data?.transactions.map((transaction: any) => (
                 <div
                     key={transaction.id}
                     className="p-4 bg-white shadow rounded flex justify-between"
@@ -92,6 +98,27 @@ const TransactionList = () => {
                     </button>
                 </div>
             ))}
+            <div className="flex gap-2 mt-4">
+                <button
+                    disabled={page === 1}
+                    onClick={() => setPage((prev) => prev - 1)}
+                    className="border px-4 py-2"
+                >
+                    Anterior
+                </button>
+
+                <span>
+                    Página {data?.page} de {data?.totalPages}
+                </span>
+
+                <button
+                    disabled={page === data?.totalPages}
+                    onClick={() => setPage((prev) => prev + 1)}
+                    className="border px-4 py-2"
+                >
+                    Próxima
+                </button>
+            </div>
         </div>
     )
 }
