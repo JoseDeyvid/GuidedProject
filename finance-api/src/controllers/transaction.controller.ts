@@ -1,7 +1,8 @@
 import { Response } from "express";
 import { TransactionService } from "../services/transaction.service";
 import { AuthRequest } from "../middlewares/auth.middleware";
-import { stringify } from "csv-stringify/sync";
+import { stringify } from "csv-stringify";
+import { Readable } from "stream";
 
 const transactionService = new TransactionService();
 
@@ -92,7 +93,8 @@ export class TransactionController {
     const transactions = await transactionService.exportCsv(userId);
 
     const formattedTransactions = transactions.map((transaction) => ({
-      ...transaction,
+      id: transaction.id,
+      title: transaction.title,
 
       amount: new Intl.NumberFormat("pt-BR", {
         style: "currency",
@@ -105,15 +107,19 @@ export class TransactionController {
       type: transaction.type === "income" ? "Receita" : "Despesa",
     }));
 
-    const csv = stringify(formattedTransactions, {
+    res.setHeader("Content-Type", "text/csv");
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=transactions.csv",
+    );
+
+    const readableStream = Readable.from(formattedTransactions);
+
+    const csvStream = stringify({
       header: true,
-      columns: ["id", "title", "amount", "type", "createdAt"],
     });
 
-    res.header("Content-Type", "text/csv");
-
-    res.attachment("transactions.csv");
-
-    return res.send(csv);
+    readableStream.pipe(csvStream).pipe(res);
   }
 }
