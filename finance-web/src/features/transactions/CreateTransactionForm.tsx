@@ -1,59 +1,103 @@
 'use client'
 
-import { useState } from "react"
-import { useCreateTransaction } from "./useCreateTransaction"
+import { useCreateTransaction } from './useCreateTransaction'
+
+import { useForm } from 'react-hook-form'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+
+import {
+    createTransactionSchema,
+    CreateTransactionFormData,
+} from './schemas/createTransactionSchema'
 
 export function CreateTransactionForm() {
-    const { mutate, isPending } = useCreateTransaction()
+    const { mutate, isPending } =
+        useCreateTransaction()
 
-    const [title, setTitle] = useState('')
-    const [amount, setAmount] = useState('')
-    const [type, setType] = useState('income')
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm<CreateTransactionFormData>({
+        resolver: zodResolver(
+            createTransactionSchema
+        ),
 
-    const handleSubmit = () => {
-        mutate(
-            { title, amount: Number(amount), type },
+        defaultValues: {
+            type: 'income',
+        },
+    })
 
-        )
+    function onSubmit(
+        data: CreateTransactionFormData
+    ) {
+        mutate(data)
 
-        setTitle('')
-        setAmount('')
-        setType('income')
+        reset()
     }
 
     return (
-        <div className="mt-6 space-y-2">
+        <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="mt-6 space-y-2"
+        >
             <input
                 placeholder="Título"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                {...register('title')}
                 className="border p-2 w-full"
             />
+
+            {errors.title && (
+                <p className="text-red-500 text-sm">
+                    {errors.title.message}
+                </p>
+            )}
 
             <input
+                type="number"
                 placeholder="Valor"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                {...register('amount', {
+                    valueAsNumber: true,
+                })}
                 className="border p-2 w-full"
             />
 
+            {errors.amount && (
+                <p className="text-red-500 text-sm">
+                    {errors.amount.message}
+                </p>
+            )}
+
             <select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
+                {...register('type')}
                 className="border p-2 w-full"
             >
-                <option value="income">Receita</option>
-                <option value="expense">Despesa</option>
+                <option value="income">
+                    Receita
+                </option>
+
+                <option value="expense">
+                    Despesa
+                </option>
             </select>
 
-            <button
-                onClick={handleSubmit}
-                disabled={isPending}
-                className="bg-blue-500 text-white p-2 w-full"
-            >
-                {isPending ? "Criando..." : "Criar"}
-            </button>
+            {errors.type && (
+                <p className="text-red-500 text-sm">
+                    {errors.type.message}
+                </p>
+            )}
 
-        </div>
+            <button
+                type="submit"
+                disabled={isPending}
+                className="bg-blue-500 text-white p-2 w-full disabled:opacity-50"
+            >
+                {isPending
+                    ? 'Criando...'
+                    : 'Criar'}
+            </button>
+        </form>
     )
 }
